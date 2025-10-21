@@ -15,9 +15,9 @@ def get_validated_input(prompt, validator_func, error_msg):
 
 def validate_positive_int(input_str):
     """Validator for positive integar(number of classes)."""
-    grade = float(input_str)
-    if 0.0 <= grade <= 4.0:
-        return grade
+    num = int(input_str)
+    if num > 0:
+        return num
     raise ValueError("Nice try, but we’re only accepting numbers with a sunny disposition. Enter a positive one.")
 def validate_gpa_range(input_str):
     """validator for GPA (0.0 to 4.0 range)."""
@@ -31,7 +31,7 @@ num_classes = get_validated_input(
     "\nInitiating GPA sequence. Step one: how many courses are you bravely enduring?",
     validate_positive_int,
     "Invalid input. Please, for pete's sake, enter a number greater than zero."
-)
+    )
 
 grades = []
 for i in range(num_classes):
@@ -59,7 +59,7 @@ if len(grades) > 1:
     mid_point = len(grades) // 2
 
     if semester_choice == '1':
-        semster_grades = grades[:mid_point]
+        semester_grades = grades[:mid_point]
         semester_name = "first"
     else:
         semester_grades = grades[:mid_point]
