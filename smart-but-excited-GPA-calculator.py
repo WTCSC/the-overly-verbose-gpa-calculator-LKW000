@@ -28,7 +28,7 @@ def validate_gpa_range(input_str):
 print("Ah, greetings! You’ve arrived at the Overly Verbose GPA Calculator, a tool so self-aware, it insists on being both brilliant and dramatically extra.")
 
 num_classes = get_validated_input(
-    "\nnitiating GPA sequence. Step one: how many courses are you bravely enduring?",
+    "\nInitiating GPA sequence. Step one: how many courses are you bravely enduring?",
     validate_positive_int,
     "Invalid input. Please, for pete's sake, enter a number greater than zero."
 )
