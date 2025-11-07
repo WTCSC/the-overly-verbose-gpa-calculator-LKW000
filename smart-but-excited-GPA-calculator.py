@@ -1,30 +1,50 @@
 import sys
+#------------------------------------------------------------------------------------------
+# HEADER COMMENTS
+# ------------------------------------------------------------------------------------------
+# File: gpa-calculator.py
+# Leila Wynn
+# November 5, 2025
+# Purpose: This script calculates a user's Grade Point Average (GPA) based on a 4.0 scale.
+#   It includes robust input validation, semester performance analysis via list slicing,
+#   and a goal achievability test (determining if a goal is met by improving one grade).
+#-------------------------------------------------------------------------------------------
 
 def get_validated_input(prompt, validator_func, error_msg):
     """Handles repeated input until a valid value is provided."""
     while True:
         try:
+            # The validator function attempts conversion (int() or float()) and checks rules.
             user_input = input(prompt)
             validated_value =  validator_func(user_input)
             return validated_value
         except ValueError:
+            # Catches errors raised by int() or float() conversion, or by the validator function itself.
             print(error_msg)
         except Exception as e:
+            # Standard handler for unexpected runtime errors.
             print("The unforeseen error has occured: {e}")
             sys.exit(1)
 
 def validate_positive_int(input_str):
-    """Validator for positive integar(number of classes)."""
+    """ Validator for positive integar(number of classes)."""
     num = int(input_str)
+    
+    # Check if the number of classes is a positive value.
     if num > 0:
         return num
+    # We must raise an error to trigger the 'except ValueError' in the input handler.
     raise ValueError("Nice try, but we’re only accepting numbers with a sunny disposition. Enter a positive one.")
 def validate_gpa_range(input_str):
     """validator for GPA (0.0 to 4.0 range)."""
     grade = float(input_str)
+    
+    # Check if the grade is within the standard 4.0 scale.
     if 0.0 <= grade <= 4.0:
         return grade
+    # Values like 5.0 or -1.0 must be rejected to maintain scale accuracy.
     raise ValueError("Grade entry invalid. Surely a mind like yours can produce something more fitting—care to retry?")
+
 print("Ah, greetings! You’ve arrived at the Overly Verbose GPA Calculator, a tool so self-aware, it insists on being both brilliant and dramatically extra.")
 
 num_classes = get_validated_input(
@@ -34,6 +54,7 @@ num_classes = get_validated_input(
     )
 
 grades = []
+# Loop N times (where N is num_classes) to gather all the required grades.
 for i in range(num_classes):
     grade_prompt = f"Please enter grade {i + 1} (0.0-4.0): "
     grade = get_validated_input(
@@ -42,9 +63,13 @@ for i in range(num_classes):
         "Surely, with your intelligent mind, you know better to put valid input?"
     )
     grades.append(grade)
+    
 if not grades:
+    # Unnecessary but but robust check against empty input lists.
     print("\nError: No grades were entered. Exiting now.")
     sys.exit(1)
+    
+# Formula: SUM(grades) / COUNT(grades)
 current_gpa = sum(grades) / len(grades)
 print("Calculating... analyzing... intriguing! The results are in — your GPA is {current_gpa: .2f}")
 print("\n-------- Semester Anaylis Module----------")
@@ -52,24 +77,31 @@ print("\n-------- Semester Anaylis Module----------")
 if len(grades) > 1:
     semester_choice = get_validated_input(
         "Which semester do you want to analyze? First semester or second semester? Enter 1 or 2: ",
+        # Using a lambda function here quickly validates the input is exactly '1' or '2'.
         lambda x: x if x in ['1', '2'] else sys.exit(ValueError("Invalid choice.")),
         "Shame on you for entering invalid choice."
     )
-
+    
+    # Integer division (//) ensures 'mid_point' is a whole number index.
     mid_point = len(grades) // 2
 
     if semester_choice == '1':
+        # List Slicing: [start_index : end_index (exclusive)]
         semester_grades = grades[:mid_point]
         semester_name = "first"
     else:
+        # List Slicing: [start_index : end_index (inclusive)]
         semester_grades = grades[:mid_point]
         semester_name = "Second"
     if semester_grades:
         semester_gpa = sum(semester_grades) / len(semester_grades)
-
+        
+        # Output and Trend Comparison
         print(f"\n{semester_name} semester GPA: {semester_gpa: .2f}")
         print(f"Overall GPA: {current_gpa: .2f}")
-
+        
+        # Comparing the two GPAs determines the performance trend.
+        # Adding a small buffer (0.01) handles potential floating-point precision errors.
         if semester_gpa > current_gpa + 0.01:
             print("Doing great! Stay strong and keep going!")
         elif semester_gpa < current_gpa - 0.01:
@@ -87,23 +119,30 @@ if len(grades) > 1:
     )
 
     if current_gpa >= goal_gpa:
+        # Exit condition: If the goal is already met, skip the testing loop.
         print(f"CONGRATS!!! Goal already met. I knew you were witty!")
     else:
         improved_grades = []
         print(f"\nalculating if your goal is achievable by improving by just ONE grade")
-
+        # This loop iterates through every grade to test a hypothetical "what if I get a 4.0?" scenario.
         for i, grade in enumerate(grades): 
+            # IMPORTANT STEP: Create a shallow copy of the list.
+            # This ensures we only modify the temporary list, preserving the original 'grades' list.
             temp_grades = list(grades)
-            temp_grades[i] = 4.0
+            temp_grades[i] = 4.0 # Set the grade being tested to a perfect 4.0
 
+            # Recalculate GPA with the single improved grade
             new_gpa = sum(temp_grades) / len(temp_grades)
             if new_gpa >= goal_gpa:
+                # Store the result (class index, original grade, and resulting GPA)
                 improved_grades.append((i + 1, grade, new_gpa))
 
         if improved_grades:
             print(f"CONGRATS!!! Goal already met. I knew you were witty!")
             for class_num, old_grade, in improved_grades:
+                
                 print(f"-Class {class_num}: Raising your grade from {old_grade: .2f} would result in {new_gpa: .2f}")
                 print("\nTime to hit the books and get that 4.0")
         else:
+            #  If the list is empty, even a single perfect grade is not enough.
             print("Unfortunately,the goal isn’t achievable by improving just one grade.")
